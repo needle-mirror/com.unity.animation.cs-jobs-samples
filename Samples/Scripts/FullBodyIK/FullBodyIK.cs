@@ -5,8 +5,8 @@ using UnityEngine.Playables;
 using UnityEngine.Experimental.Animations;
 using UnityEditor;
 
-public class FullBodyIK : MonoBehaviour 
-{   
+public class FullBodyIK : MonoBehaviour
+{
     private GameObject leftFootEffector;
     private GameObject rightFootEffector;
     private GameObject leftHandEffector;
@@ -25,28 +25,36 @@ public class FullBodyIK : MonoBehaviour
     private PlayableGraph graph;
     private AnimationScriptPlayable ikPlayable;
 
-    private GameObject CreateEffector(string name)
+    private static GameObject CreateEffector(string name)
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        go.name = name;
-        go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        if (go != null)
+        {
+            go.name = name;
+            go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        }
+
         return go;
     }
 
-    private GameObject CreateBodyEffector(string name)
+    private static GameObject CreateBodyEffector(string name)
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        go.name = name;
-        go.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        if (go != null)
+        {
+            go.name = name;
+            go.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        }
+
         return go;
     }
-        
+
     private GameObject SetupEffector(ref FullBodyIKJob.EffectorHandle handle, string name)
     {
         var go = CreateEffector(name);
-        go.AddComponent<Effector>();
-        if(go != null)
+        if (go != null)
         {
+            go.AddComponent<Effector>();
             handle.effector = animator.BindSceneTransform(go.transform);
             handle.positionWeight = animator.BindSceneProperty(go.transform, typeof(Effector), "positionWeight");
             handle.rotationWeight = animator.BindSceneProperty(go.transform, typeof(Effector), "rotationWeight");
@@ -57,9 +65,9 @@ public class FullBodyIK : MonoBehaviour
     private GameObject SetupHintEffector(ref FullBodyIKJob.HintEffectorHandle handle, string name)
     {
         var go = CreateEffector(name);
-        go.AddComponent<HintEffector>();
-        if(go != null)
+        if (go != null)
         {
+            go.AddComponent<HintEffector>();
             handle.hint = animator.BindSceneTransform(go.transform);
             handle.weight = animator.BindSceneProperty(go.transform, typeof(HintEffector), "weight");
         }
@@ -69,9 +77,9 @@ public class FullBodyIK : MonoBehaviour
     private GameObject SetupLookAtEffector(ref FullBodyIKJob.LookEffectorHandle handle, string name)
     {
         var go = CreateEffector(name);
-        go.AddComponent<LookAtEffector>();
-        if(go != null)
+        if (go != null)
         {
+            go.AddComponent<LookAtEffector>();
             handle.lookAt =  animator.BindSceneTransform(go.transform);
             handle.eyesWeight = animator.BindSceneProperty(go.transform, typeof(LookAtEffector), "eyesWeight");
             handle.headWeight = animator.BindSceneProperty(go.transform, typeof(LookAtEffector), "headWeight");
@@ -84,11 +92,9 @@ public class FullBodyIK : MonoBehaviour
     private GameObject SetupBodyEffector(ref FullBodyIKJob.BodyEffectorHandle handle, string name)
     {
         var go = CreateBodyEffector(name);
-        go.AddComponent<HintEffector>();
-        if(go != null)
+        if (go != null)
         {
             handle.body =  animator.BindSceneTransform(go.transform);
-            handle.weight = animator.BindSceneProperty(go.transform, typeof(HintEffector), "weight");
         }
         return go;
     }
@@ -120,7 +126,7 @@ public class FullBodyIK : MonoBehaviour
         {
             AnimationHumanStream humanStream = stream.AsHuman();
 
-            // don't sync if transform is currently selected 
+            // don't sync if transform is currently selected
             if( !Array.Exists(selectedTransform, transform => transform == leftFootEffector.transform) )
             {
                 leftFootEffector.transform.position = humanStream.GetGoalPositionFromPose(AvatarIKGoal.LeftFoot);
@@ -202,7 +208,7 @@ public class FullBodyIK : MonoBehaviour
         bodyRotationEffector = SetupBodyEffector(ref job.bodyEffector, "bodyEffector");
 
         ikPlayable = AnimationScriptPlayable.Create<FullBodyIKJob>(graph, job);
-        
+
         output.SetSourcePlayable(ikPlayable);
 
         // Sync IK goal on original pose and activate ik weight
@@ -211,7 +217,7 @@ public class FullBodyIK : MonoBehaviour
 
         graph.Play();
     }
-    
+
     void OnDisable()
     {
         GameObject.DestroyImmediate(leftFootEffector);

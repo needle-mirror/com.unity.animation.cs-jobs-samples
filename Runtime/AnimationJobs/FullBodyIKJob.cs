@@ -4,7 +4,7 @@ using UnityEngine.Animations;
 using UnityEngine.Experimental.Animations;
 
 public struct FullBodyIKJob : IAnimationJob
-{  
+{
     public struct EffectorHandle
     {
         public TransformSceneHandle effector;
@@ -30,7 +30,6 @@ public struct FullBodyIKJob : IAnimationJob
     public struct BodyEffectorHandle
     {
         public TransformSceneHandle body;
-        public PropertySceneHandle  weight;
     }
 
     public EffectorHandle leftFootEffector;
@@ -84,9 +83,8 @@ public struct FullBodyIKJob : IAnimationJob
 
     private void SetBodyEffector(AnimationStream stream, ref BodyEffectorHandle handle)
     {
-        if (handle.body.IsValid(stream) && handle.weight.IsValid(stream))
+        if (handle.body.IsValid(stream))
         {
-            float weight = handle.weight.GetFloat(stream);
             AnimationHumanStream humanStream = stream.AsHuman();
             humanStream.bodyRotation = handle.body.GetRotation(stream);
         }

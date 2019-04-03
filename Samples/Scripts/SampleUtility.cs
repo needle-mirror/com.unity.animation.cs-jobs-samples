@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-static class SampleUtility
+public static class SampleUtility
 {
     public static AnimationClip LoadAnimationClipFromFbx(string fbxName, string clipName)
     {
